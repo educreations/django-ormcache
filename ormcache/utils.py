@@ -1,7 +1,7 @@
 from django.db.models.fields.related import SingleRelatedObjectDescriptor
 
 
-def distinct(l):
+def _distinct(l):
     """
     Given an iterable will return a list of all distinct values.
     """
@@ -32,8 +32,8 @@ def attach_foreignkey(objects, field):
 
     # Ensure values are unique, do not contain already present values, and
     # are not missing values specified in select_related
-    values = distinct(getattr(o, column) for o in objects if
-                      getattr(o, accessor, False) is False)
+    values = _distinct(getattr(o, column) for o in objects if
+                       getattr(o, accessor, False) is False)
     if not values:
         return
 
