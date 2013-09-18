@@ -1,0 +1,2 @@
+django==1.5.3
+django_nose==1.2
