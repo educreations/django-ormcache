@@ -12,6 +12,14 @@ class SignalsTestCase(SimpleTestCase):
         self.instance_pk = CachedDummyModel.objects.create().pk
         cache.clear()
 
+    def tearDown(self):
+        self._disconnect_signals()
+
+    def _disconnect_signals(self):
+        cache_hit.disconnect(self._signal_callback)
+        cache_missed.disconnect(self._signal_callback)
+        cache_invalidated.disconnect(self._signal_callback)
+
     def _signal_callback(self, sender, signal):
         self.signal_called = True
 
