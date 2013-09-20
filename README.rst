@@ -15,10 +15,10 @@ Testing
 
 Run the tests with:
 
-```bash
-pip install -r requirements.txt
-python runtests.py
-```
+.. code:: bash
+
+    pip install -r requirements.txt
+    python runtests.py
 
 
 License
