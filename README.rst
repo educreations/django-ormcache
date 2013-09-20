@@ -24,4 +24,4 @@ python runtests.py
 License
 -------
 
-Copyright © 2013, Educreations, Inc under the [MIT](LICENSE).
+Copyright © 2013, Educreations, Inc under the `MIT <LICENSE>`_.
