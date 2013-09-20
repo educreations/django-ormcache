@@ -22,6 +22,7 @@ class SignalsTestCase(SimpleTestCase):
 
     def _signal_callback(self, sender, signal):
         self.signal_called = True
+        self.assertEquals(sender, CachedDummyModel)
 
     def test_cache_hit_signal(self):
         cache_hit.connect(self._signal_callback)
