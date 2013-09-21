@@ -3,6 +3,8 @@ import logging
 from django.core.cache import cache
 from django.db.models.query import QuerySet
 
+from ormcache.signals import cache_hit, cache_missed, cache_invalidated
+
 log = logging.getLogger(__name__)
 
 
@@ -43,12 +45,11 @@ class CachedQuerySet(QuerySet):
         # Retrieve (or set) the item in the cache
         item = cache.get(key)
         if item is None:
-            # TODO: send miss signal
+            cache_missed.send(sender=self.model)
             item = super(CachedQuerySet, self).get(*args, **kwargs)
             cache.set(key, item, self._CACHE_FOREVER)
         else:
-            # TODO: send hit signal
-            pass
+            cache_hit.send(sender=self.model)
 
         return item
 
@@ -84,7 +85,7 @@ class CachedQuerySet(QuerySet):
         Invalidate a single item in the cache
         """
         key = self.cache_key(pk)
-        # TODO: send invalidate signal
+        cache_invalidated.send(sender=self.model)
         if recache is True:
             try:
                 entry = super(CachedQuerySet, self).get(pk=pk)
