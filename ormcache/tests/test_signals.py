@@ -1,48 +1,40 @@
 from django.core.cache import cache
-from django.test import SimpleTestCase
+from django.test import TestCase
+from mock_django.signals import mock_signal_receiver
 
 from ormcache.signals import cache_hit, cache_missed, cache_invalidated
 from ormcache.tests.testapp.models import CachedDummyModel
 
 
-class SignalsTestCase(SimpleTestCase):
+class SignalsTestCase(TestCase):
 
     def setUp(self):
-        self.signal_called = False
         self.instance_pk = CachedDummyModel.objects.create().pk
         cache.clear()
 
-    def tearDown(self):
-        self._disconnect_signals()
-
-    def _disconnect_signals(self):
-        cache_hit.disconnect(self._signal_callback)
-        cache_missed.disconnect(self._signal_callback)
-        cache_invalidated.disconnect(self._signal_callback)
-
-    def _signal_callback(self, sender, signal):
-        self.signal_called = True
-        self.assertEquals(sender, CachedDummyModel)
-
     def test_cache_hit_signal(self):
-        cache_hit.connect(self._signal_callback)
+        with mock_signal_receiver(cache_hit, sender=CachedDummyModel) as receiver:
+            # Cache miss
+            CachedDummyModel.objects.get(pk=self.instance_pk)
+            self.assertEquals(0, receiver.call_count)
 
-        CachedDummyModel.objects.get(pk=self.instance_pk)  # miss
-        self.assertFalse(self.signal_called)
-        CachedDummyModel.objects.get(pk=self.instance_pk)  # hit
-        self.assertTrue(self.signal_called)
+            # Cache hit
+            CachedDummyModel.objects.get(pk=self.instance_pk)
+            self.assertEquals(1, receiver.call_count)
 
     def test_cache_missed_signal(self):
-        cache_missed.connect(self._signal_callback)
-
-        CachedDummyModel.objects.get(pk=self.instance_pk)  # miss
-        self.assertTrue(self.signal_called)
+        with mock_signal_receiver(cache_missed, sender=CachedDummyModel) as receiver:
+            # Cache miss
+            CachedDummyModel.objects.get(pk=self.instance_pk)
+            self.assertEquals(1, receiver.call_count)
 
     def test_cache_invalidated_signal(self):
-        cache_invalidated.connect(self._signal_callback)
+        with mock_signal_receiver(cache_invalidated, sender=CachedDummyModel) as receiver:
+            # Cache miss
+            instance = CachedDummyModel.objects.get(pk=self.instance_pk)
+            self.assertEquals(0, receiver.call_count)
 
-        instance = CachedDummyModel.objects.get(pk=self.instance_pk)  # miss
-        self.assertFalse(self.signal_called)
-        instance.title = "hello"
-        instance.save()  # invalidate
-        self.assertTrue(self.signal_called)
+            # Save the object
+            instance.title = "hello"
+            instance.save()  # invalidate
+            self.assertEquals(1, receiver.call_count)
