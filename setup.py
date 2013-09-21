@@ -16,7 +16,7 @@ readme_text = open("README.rst", "rb").read()
 
 setup(
     name="django-ormcache",
-    version="0.1",
+    version="0.2",
     description="ORM cache for Django",
     license="MIT",
     keywords="cache django",
