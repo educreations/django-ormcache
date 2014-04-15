@@ -23,7 +23,7 @@ setup(
     author="Corey Farwell",
     author_email="coreyf@rwell.org",
     maintainer="Corey Farwell",
-    maintainer_email="coreyf@rwel.org",
+    maintainer_email="coreyf@rwell.org",
     url="https://github.com/educreations/django-ormcache",
     long_description=readme_text,
     packages=["ormcache"],
