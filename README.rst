@@ -1,6 +1,8 @@
 Django ORMCache
 ===============
 
+.. image:: https://travis-ci.org/educreations/django-ormcache.svg?branch=master   :target: https://travis-ci.org/educreations/django-ormcache
+
 A cache manager mixin that provides some caching of objects for the ORM.
 
 
