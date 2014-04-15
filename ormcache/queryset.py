@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class CachedQuerySet(QuerySet):
 
-    _CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
+    __CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
 
     def get(self, *args, **kwargs):
         """
@@ -47,7 +47,7 @@ class CachedQuerySet(QuerySet):
         if item is None:
             cache_missed.send(sender=self.model)
             item = super(CachedQuerySet, self).get(*args, **kwargs)
-            cache.set(key, item, self._CACHE_FOREVER)
+            cache.set(key, item, self.__CACHE_FOREVER)
         else:
             cache_hit.send(sender=self.model)
 
@@ -70,7 +70,7 @@ class CachedQuerySet(QuerySet):
 
             # Cache the uncached instances
             to_cache = {self.cache_key(i.pk): i for i in uncached}
-            cache.set_many(to_cache, self._CACHE_FOREVER)
+            cache.set_many(to_cache, self.__CACHE_FOREVER)
 
         return cached_instances
 
@@ -96,6 +96,6 @@ class CachedQuerySet(QuerySet):
                     exc_info=True,
                     extra={'data': {'model': self.model, 'pk': pk}})
             else:
-                cache.set(key, entry, self._CACHE_FOREVER)
+                cache.set(key, entry, self.__CACHE_FOREVER)
         else:
             cache.delete(key)
