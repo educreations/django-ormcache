@@ -12,6 +12,13 @@ class CachedQuerySet(QuerySet):
 
     __CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
 
+    def __is_filtered(self):
+        return len(self.query.where.children) > 0
+
+    def __is_deferred(self):
+        return (len(self.query.deferred_loading[0]) > 0 or
+                not self.query.deferred_loading[1])
+
     def get(self, *args, **kwargs):
         """
         Adds a layer of caching around the Manager's built in 'get()' method.
@@ -19,13 +26,8 @@ class CachedQuerySet(QuerySet):
         'get()' method will be cached indefinitely (30 days) until invalidated.
         """
 
-        # Don't access cache if using a filtered queryset
-        if len(self.query.where.children) > 0:
-            return super(CachedQuerySet, self).get(*args, **kwargs)
-
-        # Don't access cache if using a deferred queryset
-        if len(self.query.deferred_loading[0]) > 0 or \
-                not self.query.deferred_loading[1]:
+        # Don't access cache if using a filtered or deferred queryset
+        if self.__is_filtered() or self.__is_deferred():
             return super(CachedQuerySet, self).get(*args, **kwargs)
 
         # Get the cache key from the model name and pk
