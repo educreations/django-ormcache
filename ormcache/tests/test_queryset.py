@@ -12,34 +12,59 @@ class CachedQuerySetTestCase(TestCase):
         self.pks = [self.instance1.pk, self.instance2.pk]
         cache.clear()
 
-    def test_from_ids_cache(self):
+    def test_filter_in_cache(self):
         with self.assertNumQueries(1):
-            instances = CachedDummyModel.objects.from_ids(self.pks)
+            instances = CachedDummyModel.objects.filter(pk__in=self.pks)
         self.assertEqual(2, len(instances))
-
         with self.assertNumQueries(0):
-            instances = CachedDummyModel.objects.from_ids(self.pks)
+            instances = CachedDummyModel.objects.filter(pk__in=self.pks)
         self.assertEqual(2, len(instances))
 
-    def test_from_ids_invalid_pk(self):
+        cache.clear()
+
+        with self.assertNumQueries(1):
+            instances = CachedDummyModel.objects.filter(id__in=self.pks)
+        self.assertEqual(2, len(instances))
+        with self.assertNumQueries(0):
+            instances = CachedDummyModel.objects.filter(id__in=self.pks)
+        self.assertEqual(2, len(instances))
+
+    def test_filter_range_cache(self):
+        with self.assertNumQueries(1):
+            instances = CachedDummyModel.objects.filter(pk__range=self.pks)
+        self.assertEqual(2, len(instances))
+        with self.assertNumQueries(0):
+            instances = CachedDummyModel.objects.filter(pk__range=self.pks)
+        self.assertEqual(2, len(instances))
+
+        cache.clear()
+
+        with self.assertNumQueries(1):
+            instances = CachedDummyModel.objects.filter(id__in=self.pks)
+        self.assertEqual(2, len(instances))
+        with self.assertNumQueries(0):
+            instances = CachedDummyModel.objects.filter(id__in=self.pks)
+        self.assertEqual(2, len(instances))
+
+    def test_filter_invalid_pk(self):
         self.pks.append(self.instance1.pk + self.instance2.pk)
 
         with self.assertNumQueries(1):
-            instances = CachedDummyModel.objects.from_ids(self.pks)
+            instances = list(CachedDummyModel.objects.filter(pk__in=self.pks))
         self.assertEqual(2, len(instances))
 
         with self.assertNumQueries(1):
-            instances = CachedDummyModel.objects.from_ids(self.pks)
+            instances = list(CachedDummyModel.objects.filter(pk__in=self.pks))
 
-    def test_from_ids_invalidation(self):
+    def test_filter_invalidation(self):
         with self.assertNumQueries(1):
-            instances = CachedDummyModel.objects.from_ids(self.pks)
+            instances = CachedDummyModel.objects.filter(pk__in=self.pks)
         self.assertEqual(2, len(instances))
 
         CachedDummyModel.objects.invalidate(self.instance1.pk)
 
         with self.assertNumQueries(1):
-            instances = CachedDummyModel.objects.from_ids(self.pks)
+            instances = CachedDummyModel.objects.filter(pk__in=self.pks)
         self.assertEqual(2, len(instances))
 
     def test_one_deferred_field(self):

@@ -55,7 +55,24 @@ class CachedQuerySet(QuerySet):
 
         return item
 
-    def from_ids(self, ids, lookup='pk__in'):
+    def filter(self, *args, **kwargs):
+
+        # Don't access cache if using a filtered or deferred queryset
+        if self.__is_filtered() or self.__is_deferred():
+            return super(CachedQuerySet, self).filter(*args, **kwargs)
+
+        if len(kwargs) > 1:
+            return super(CachedQuerySet, self).filter(*args, **kwargs)
+
+        lookup, value = kwargs.items()[0]
+
+        if lookup in ['pk__in', 'id__in']:
+            ids = value
+        elif lookup in ['pk__range', 'id__range']:
+            ids = range(value[0], value[1] + 1)
+        else:
+            return super(CachedQuerySet, self).filter(*args, **kwargs)
+
         cache_keys = [self.cache_key(id_) for id_ in ids]
 
         cached = cache.get_many(cache_keys)
@@ -65,7 +82,7 @@ class CachedQuerySet(QuerySet):
 
         # If there are uncached instances, retrieve and cache them
         if len(uncached_ids) > 0:
-            uncached = self.filter(**{lookup: uncached_ids})
+            uncached = super(CachedQuerySet, self).filter(pk__in=uncached_ids)
 
             # Add the uncached instances to the existing instances
             cached_instances += uncached
