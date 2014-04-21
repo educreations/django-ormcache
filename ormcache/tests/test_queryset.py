@@ -46,6 +46,17 @@ class CachedQuerySetTestCase(TestCase):
             instances = CachedDummyModel.objects.filter(id__in=self.pks)
         self.assertEqual(2, len(instances))
 
+    def test_filter_more_than_one_kwarg(self):
+        """
+        Don't attempt to pull from cache if more than one filter kwarg is
+        specified
+        """
+        with self.assertNumQueries(1):
+            list(CachedDummyModel.objects.filter(id__in=self.pks))
+        with self.assertNumQueries(1):
+            list(CachedDummyModel.objects.filter(
+                pk__in=self.pks, id__in=self.pks))
+
     def test_filter_invalid_pk(self):
         self.pks.append(self.instance1.pk + self.instance2.pk)
 
