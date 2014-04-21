@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-import sys
+# Django must be set up before we import our libraries and run our tests
 
 from django.conf import settings
-
 
 settings.configure(
     DEBUG=True,
@@ -31,7 +30,13 @@ settings.configure(
     TEST_RUNNER='django_nose.NoseTestSuiteRunner',
 )
 
+
+# Run tests
+
+import sys
+
 from django_nose import NoseTestSuiteRunner
+
 
 test_runner = NoseTestSuiteRunner(verbosity=1)
 test_runner.setup_databases()
