@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Setup Django
+# Django must be set up before we import our libraries and run our tests
 
 from django.conf import settings
 
