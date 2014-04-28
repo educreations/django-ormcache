@@ -11,11 +11,9 @@ from ormcache.utils import attach_foreignkey
 class AttachForeignkeyTestCase(test.TestCase):
 
     def setUp(self):
-        self.instance = CachedDummyModel.objects.create()
         self.related_instance = OtherCachedDummyModel.objects.create()
-
-        self.instance.related = self.related_instance
-        self.instance.save()
+        self.instance = CachedDummyModel.objects.create(
+            related=self.related_instance)
 
         cache.clear()
 
