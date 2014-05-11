@@ -12,12 +12,14 @@ class CachedQuerySet(QuerySet):
 
     __CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
 
-    def __is_filtered(self):
-        return len(self.query.where.children) > 0
+    @staticmethod
+    def __is_filtered(query):
+        return len(query.where.children) > 0
 
-    def __is_deferred(self):
-        return (len(self.query.deferred_loading[0]) > 0 or
-                not self.query.deferred_loading[1])
+    @staticmethod
+    def __is_deferred(query):
+        return (len(query.deferred_loading[0]) > 0 or
+                not query.deferred_loading[1])
 
     def get(self, *args, **kwargs):
         """
@@ -27,7 +29,7 @@ class CachedQuerySet(QuerySet):
         """
 
         # Don't access cache if using a filtered or deferred queryset
-        if self.__is_filtered() or self.__is_deferred():
+        if self.__is_filtered(self.query) or self.__is_deferred(self.query):
             return super(CachedQuerySet, self).get(*args, **kwargs)
 
         # Get the cache key from the model name and pk
@@ -58,7 +60,7 @@ class CachedQuerySet(QuerySet):
     def filter(self, *args, **kwargs):
 
         # Don't access cache if using a filtered or deferred queryset
-        if self.__is_filtered() or self.__is_deferred():
+        if self.__is_filtered(self.query) or self.__is_deferred(self.query):
             return super(CachedQuerySet, self).filter(*args, **kwargs)
 
         if len(kwargs) > 1:
