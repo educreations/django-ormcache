@@ -36,8 +36,9 @@ def cache_result(ttl=60 * 5, key=None):
         def inner(*args, **kwargs):
             key_ = key
             if key_ is None:
-                key_ = sha1(str(func.__module__) + str(func.__name__) +
-                            str(args) + str(kwargs)).hexdigest()
+                func_signature = (str(func.__module__) + str(func.__name__) +
+                                  str(args) + str(kwargs)).encode("utf8")
+                key_ = sha1(func_signature).hexdigest()
             result = cache.get(key_)
             if result is None:
                 result = func(*args, **kwargs)
