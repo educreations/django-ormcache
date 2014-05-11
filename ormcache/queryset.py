@@ -21,6 +21,10 @@ class CachedQuerySet(QuerySet):
         return (len(query.deferred_loading[0]) > 0 or
                 not query.deferred_loading[1])
 
+    @classmethod
+    def __is_cacheable(cls, query):
+        return not cls.__is_filtered(query) and not cls.__is_deferred(query)
+
     def get(self, *args, **kwargs):
         """
         Adds a layer of caching around the Manager's built in 'get()' method.
@@ -29,7 +33,7 @@ class CachedQuerySet(QuerySet):
         """
 
         # Don't access cache if using a filtered or deferred queryset
-        if self.__is_filtered(self.query) or self.__is_deferred(self.query):
+        if not self.__is_cacheable(self.query):
             return super(CachedQuerySet, self).get(*args, **kwargs)
 
         # Get the cache key from the model name and pk
@@ -60,7 +64,7 @@ class CachedQuerySet(QuerySet):
     def filter(self, *args, **kwargs):
 
         # Don't access cache if using a filtered or deferred queryset
-        if self.__is_filtered(self.query) or self.__is_deferred(self.query):
+        if not self.__is_cacheable(self.query):
             return super(CachedQuerySet, self).filter(*args, **kwargs)
 
         if len(kwargs) > 1:
