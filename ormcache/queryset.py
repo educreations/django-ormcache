@@ -12,6 +12,19 @@ class CachedQuerySet(QuerySet):
 
     __CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
 
+    @staticmethod
+    def __is_filtered(query):
+        return len(query.where.children) > 0
+
+    @staticmethod
+    def __is_deferred(query):
+        return (len(query.deferred_loading[0]) > 0 or
+                not query.deferred_loading[1])
+
+    @classmethod
+    def __is_cacheable(cls, query):
+        return not cls.__is_filtered(query) and not cls.__is_deferred(query)
+
     def get(self, *args, **kwargs):
         """
         Adds a layer of caching around the Manager's built in 'get()' method.
@@ -19,13 +32,8 @@ class CachedQuerySet(QuerySet):
         'get()' method will be cached indefinitely (30 days) until invalidated.
         """
 
-        # Don't access cache if using a filtered queryset
-        if len(self.query.where.children) > 0:
-            return super(CachedQuerySet, self).get(*args, **kwargs)
-
-        # Don't access cache if using a deferred queryset
-        if len(self.query.deferred_loading[0]) > 0 or \
-                not self.query.deferred_loading[1]:
+        # Don't access cache if using a filtered or deferred queryset
+        if not self.__is_cacheable(self.query):
             return super(CachedQuerySet, self).get(*args, **kwargs)
 
         # Get the cache key from the model name and pk
@@ -53,7 +61,24 @@ class CachedQuerySet(QuerySet):
 
         return item
 
-    def from_ids(self, ids, lookup='pk__in'):
+    def filter(self, *args, **kwargs):
+
+        # Don't access cache if using a filtered or deferred queryset
+        if not self.__is_cacheable(self.query):
+            return super(CachedQuerySet, self).filter(*args, **kwargs)
+
+        if len(kwargs) > 1:
+            return super(CachedQuerySet, self).filter(*args, **kwargs)
+
+        lookup, value = kwargs.items()[0]
+
+        if lookup in ['pk__in', 'id__in']:
+            ids = value
+        elif lookup in ['pk__range', 'id__range']:
+            ids = range(value[0], value[1] + 1)
+        else:
+            return super(CachedQuerySet, self).filter(*args, **kwargs)
+
         cache_keys = [self.cache_key(id_) for id_ in ids]
 
         cached = cache.get_many(cache_keys)
@@ -63,7 +88,7 @@ class CachedQuerySet(QuerySet):
 
         # If there are uncached instances, retrieve and cache them
         if len(uncached_ids) > 0:
-            uncached = self.filter(**{lookup: uncached_ids})
+            uncached = super(CachedQuerySet, self).filter(pk__in=uncached_ids)
 
             # Add the uncached instances to the existing instances
             cached_instances += uncached
