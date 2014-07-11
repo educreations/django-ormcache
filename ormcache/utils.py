@@ -37,8 +37,12 @@ def attach_foreignkey(objects, field):
     if not values:
         return
 
-    # Pull instances from cache using filter() if caching is enabled
-    instances = model.objects.filter(**{lookup: values})
+    # Pull instances from cache if caching is enabled. This conditional logic
+    # can be removed when the UserManager inherits BaseManager
+    if getattr(model, 'cache_enabled', False) is True:
+        instances = model.objects.from_ids(values, lookup=lookup)
+    else:
+        instances = model.objects.filter(**{lookup: values})
 
     instances_dict = {getattr(i, key): i for i in instances}
 
