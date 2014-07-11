@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v0.3 (unreleased)
+-----------------
+
+`from_ids` can no longer be called on a manager not handled by django-ormcache
+
 v0.2
 ----
 
