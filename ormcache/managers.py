@@ -19,6 +19,11 @@ class CachedManagerMixin(object):
         return wrapper
 
     @__require_cache
+    def from_ids(self, ids, lookup='pk__in', **kwargs):
+        queryset = self.get_query_set()
+        return queryset.from_ids(ids, lookup=lookup, **kwargs)
+
+    @__require_cache
     def invalidate(self, *args, **kwargs):
         return self.get_query_set().invalidate(*args, **kwargs)
 

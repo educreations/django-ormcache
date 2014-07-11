@@ -1,11 +1,10 @@
 Changelog
 =========
 
-v0.3
-----
+v0.3 (unreleased)
+-----------------
 
-`from_ids` has been removed. Use `filter(pk__in=...)` to accomplish the same thing.
-kwargs for filter (pk__in, id__in, pk__range, id__range) all now attempt to pull from the cache.
+`from_ids` can no longer be called on a manager not handled by django-ormcache
 
 v0.2
 ----
