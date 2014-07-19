@@ -16,10 +16,12 @@ class CachedQuerySetTestCase(TestCase):
         with self.assertNumQueries(1):
             instances = CachedDummyModel.objects.from_ids(self.pks)
         self.assertEqual(2, len(instances))
+        self.assertIsInstance(instances, list)
 
         with self.assertNumQueries(0):
             instances = CachedDummyModel.objects.from_ids(self.pks)
         self.assertEqual(2, len(instances))
+        self.assertIsInstance(instances, list)
 
     def test_from_ids_invalid_pk(self):
         self.pks.append(self.instance1.pk + self.instance2.pk)
@@ -27,20 +29,24 @@ class CachedQuerySetTestCase(TestCase):
         with self.assertNumQueries(1):
             instances = CachedDummyModel.objects.from_ids(self.pks)
         self.assertEqual(2, len(instances))
+        self.assertIsInstance(instances, list)
 
         with self.assertNumQueries(1):
             instances = CachedDummyModel.objects.from_ids(self.pks)
+        self.assertIsInstance(instances, list)
 
     def test_from_ids_invalidation(self):
         with self.assertNumQueries(1):
             instances = CachedDummyModel.objects.from_ids(self.pks)
         self.assertEqual(2, len(instances))
+        self.assertIsInstance(instances, list)
 
         CachedDummyModel.objects.invalidate(self.instance1.pk)
 
         with self.assertNumQueries(1):
             instances = CachedDummyModel.objects.from_ids(self.pks)
         self.assertEqual(2, len(instances))
+        self.assertIsInstance(instances, list)
 
     def test_one_deferred_field(self):
         # This should not cache lesson since it contains a deferred field

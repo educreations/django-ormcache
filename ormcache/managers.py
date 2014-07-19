@@ -18,19 +18,18 @@ class CachedManagerMixin(object):
             return func(self, *args, **kwargs)
         return wrapper
 
+    @__require_cache
     def from_ids(self, ids, lookup='pk__in', **kwargs):
-        queryset = self.get_query_set()
-        if not self.__cache_enabled:
-            return queryset.filter(**{lookup: ids})
+        queryset = self.get_queryset()
         return queryset.from_ids(ids, lookup=lookup, **kwargs)
 
     @__require_cache
     def invalidate(self, *args, **kwargs):
-        return self.get_query_set().invalidate(*args, **kwargs)
+        return self.get_queryset().invalidate(*args, **kwargs)
 
     @__require_cache
     def cache_key(self, *args, **kwargs):
-        return self.get_query_set().cache_key(*args, **kwargs)
+        return self.get_queryset().cache_key(*args, **kwargs)
 
     # Django overrides
 
@@ -41,14 +40,24 @@ class CachedManagerMixin(object):
         super(CachedManagerMixin, self).contribute_to_class(model, name)
         class_prepared.connect(self.__class_prepared_cache, sender=model)
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
         Overrides Django builtin
         """
         if self.__cache_enabled:
             return CachedQuerySet(self.model)
         else:
-            return super(CachedManagerMixin, self).get_query_set()
+            super_ = super(CachedManagerMixin, self)
+
+            if hasattr(super_, "get_queryset"):
+                # Django > 1.6
+                return super_.get_queryset()
+
+            # Django <= 1.5
+            return super_.get_query_set()
+
+    # Support for Django <= 1.5
+    get_query_set = get_queryset
 
     # Signals
 
