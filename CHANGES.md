@@ -1,6 +1,11 @@
 Changelog
 =========
 
+V0.4 (unreleased)
+-----------------
+
+* Python 3 support
+
 v0.3
 ----
 
