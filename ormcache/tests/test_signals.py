@@ -1,6 +1,5 @@
 from django.core.cache import cache
 from django.test import TestCase
-from mock_django.signals import mock_signal_receiver
 
 from ormcache.signals import cache_hit, cache_missed, cache_invalidated
 from ormcache.tests.testapp.models import CachedDummyModel
