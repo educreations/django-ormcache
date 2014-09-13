@@ -1,6 +1,6 @@
 from django.db import models
 
-from ormcache.tests.testapp.managers import DummyManager
+from tests.testapp.managers import DummyManager
 
 
 class CachedDummyModel(models.Model):

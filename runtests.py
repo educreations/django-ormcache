@@ -2,7 +2,11 @@
 
 # Django must be set up before we import our libraries and run our tests
 
+import sys
+
+import django
 from django.conf import settings
+
 
 settings.configure(
     DEBUG=True,
@@ -25,21 +29,20 @@ settings.configure(
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'ormcache',
-        'ormcache.tests.testapp',
+        'tests.testapp',
     ),
-    TEST_RUNNER='django_nose.NoseTestSuiteRunner',
 )
+
+if django.VERSION[:2] >= (1, 7):
+    django.setup()
 
 
 # Run tests
 
-import sys
+from django.test.runner import DiscoverRunner
 
-from django_nose import NoseTestSuiteRunner
-
-
-test_runner = NoseTestSuiteRunner(verbosity=1)
+test_runner = DiscoverRunner(verbosity=1)
 test_runner.setup_databases()
-failures = test_runner.run_tests(['ormcache', ])
+failures = test_runner.run_tests(['tests', ])
 if failures:
     sys.exit(failures)

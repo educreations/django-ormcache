@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from django import test
 
-from ormcache.tests.testapp.models import (
+from tests.testapp.models import (
     CachedDummyModel,
     OtherCachedDummyModel,
 )

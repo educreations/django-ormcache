@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from django.test import TestCase
 
-from ormcache.tests.testapp.models import CachedDummyModel
+from tests.testapp.models import CachedDummyModel
 
 
 class CachedQuerySetTestCase(TestCase):

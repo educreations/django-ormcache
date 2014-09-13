@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 
-from ormcache.tests.testapp.models import CachedDummyModel, UncachedDummyModel
+from tests.testapp.models import CachedDummyModel, UncachedDummyModel
 
 
 class BaseManagerCacheTestCase(SimpleTestCase):
