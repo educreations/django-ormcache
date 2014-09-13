@@ -28,7 +28,7 @@ setup(
     long_description=readme_text,
     packages=["ormcache"],
     package_dir={"ormcache": "ormcache"},
-    install_requires=['Django'],
+    install_requires=['Django==1.6'],
     classifiers=[
         'Framework :: Django',
         "Intended Audience :: Developers",
