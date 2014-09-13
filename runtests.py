@@ -38,7 +38,7 @@ if django.VERSION[:2] >= (1, 7):
 
 
 # Run tests
-#
+
 from django.test.runner import DiscoverRunner
 
 test_runner = DiscoverRunner(verbosity=1)
