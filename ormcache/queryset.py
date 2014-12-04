@@ -58,7 +58,7 @@ class CachedQuerySet(QuerySet):
 
         instances = cache.get_many(cache_keys).values()
         cached_dict = {i.id: i for i in instances if i}
-        uncached_ids = set(ids) - cached_dict.keys()
+        uncached_ids = set(ids) - set(cached_dict.keys())
 
         # If there are uncached instances, retrieve and cache them
         if len(uncached_ids) > 0:
