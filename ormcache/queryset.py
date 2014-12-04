@@ -56,23 +56,22 @@ class CachedQuerySet(QuerySet):
     def from_ids(self, ids, lookup='pk__in'):
         cache_keys = [self.cache_key(id_) for id_ in ids]
 
-        cached = cache.get_many(cache_keys)
-        cached_instances = [i for i in cached.values() if i]
-        cached_ids = {instance.pk for instance in cached_instances}
-        uncached_ids = set(ids) - cached_ids
+        instances = cache.get_many(cache_keys).values()
+        cached_dict = {i.id: i for i in instances if i}
+        uncached_ids = set(ids) - set(cached_dict.keys())
 
         # If there are uncached instances, retrieve and cache them
         if len(uncached_ids) > 0:
             uncached = self.filter(**{lookup: uncached_ids})
 
             # Add the uncached instances to the existing instances
-            cached_instances += uncached
+            cached_dict.update((i.id, i) for i in uncached)
 
             # Cache the uncached instances
             to_cache = {self.cache_key(i.pk): i for i in uncached}
             cache.set_many(to_cache, self.__CACHE_FOREVER)
 
-        return cached_instances
+        return [cached_dict[id_] for id_ in ids if id_ in cached_dict]
 
     def cache_key(self, pk):
         """
