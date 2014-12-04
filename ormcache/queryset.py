@@ -71,7 +71,7 @@ class CachedQuerySet(QuerySet):
             to_cache = {self.cache_key(i.pk): i for i in uncached}
             cache.set_many(to_cache, self.__CACHE_FOREVER)
 
-        return list(cached_dict.values())
+        return [cached_dict[id_] for id_ in ids if id_ in cached_dict]
 
     def cache_key(self, pk):
         """
