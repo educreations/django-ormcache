@@ -1,8 +1,8 @@
 Changelog
 =========
 
-V0.4 (unreleased)
------------------
+V0.4
+----
 
 * Python 3 support
 * `from_ids` now returns the model instances in the same order they were given in
