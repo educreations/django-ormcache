@@ -31,6 +31,7 @@ settings.configure(
         'ormcache',
         'tests.testapp',
     ),
+    MIDDLEWARE_CLASSES=('django.middleware.common.CommonMiddleware',),
 )
 
 if django.VERSION[:2] >= (1, 7):
