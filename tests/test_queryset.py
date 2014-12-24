@@ -12,6 +12,24 @@ class CachedQuerySetTestCase(TestCase):
         self.pks = [self.instance1.pk, self.instance2.pk]
         cache.clear()
 
+    def test_filter_get_nocache(self):
+        # Get the cache key for an instance, make sure it doesn't exist
+        cache_key = CachedDummyModel.objects.cache_key(self.instance1.pk)
+        self.assertIsNone(cache.get(cache_key))
+
+        # Use .get() after .filter() with no args, should set cache
+        CachedDummyModel.objects.filter().get(pk=self.instance1.pk)
+        self.assertIsNotNone(cache.get(cache_key))
+        cache.clear()
+
+        # Use .get() after .filter(...), should not set cache
+        CachedDummyModel.objects.filter(pk__gt=0).get(pk=self.instance1.pk)
+        self.assertIsNone(cache.get(cache_key))
+
+        # Use .get() normally, should set cache
+        CachedDummyModel.objects.get(pk=self.instance1.pk)
+        self.assertIsNotNone(cache.get(cache_key))
+
     def test_from_ids_cache(self):
         with self.assertNumQueries(1):
             instances = CachedDummyModel.objects.from_ids(self.pks)
