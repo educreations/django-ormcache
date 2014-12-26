@@ -1,6 +1,7 @@
 import logging
 
 from django.core.cache import cache
+from django.db import connection
 from django.db.models.query import QuerySet
 
 from ormcache.signals import cache_hit, cache_missed, cache_invalidated
@@ -18,6 +19,9 @@ class CachedQuerySet(QuerySet):
         Will only cache if 'pk' or 'id' is used in kwargs. Results from the
         'get()' method will be cached indefinitely (30 days) until invalidated.
         """
+
+        if connection.in_atomic_block:
+            return super(CachedQuerySet, self).get(*args, **kwargs)
 
         # Don't access cache if using a filtered queryset
         if len(self.query.where.children) > 0:
