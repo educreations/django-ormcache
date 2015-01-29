@@ -1,3 +1,4 @@
+import django
 from django.core.cache import cache
 from django.test import TestCase
 
@@ -25,6 +26,11 @@ class CachedQuerySetTestCase(TestCase):
         # Use .get() after .filter(...), should not set cache
         CachedDummyModel.objects.filter(pk__gt=0).get(pk=self.instance1.pk)
         self.assertIsNone(cache.get(cache_key))
+
+        # Use .get() after .filter(pk=), should set cache
+        if django.VERSION >= (1, 7):
+            CachedDummyModel.objects.filter(pk=self.instance1.pk).get()
+            self.assertIsNotNone(cache.get(cache_key))
 
         # Use .get() normally, should set cache
         CachedDummyModel.objects.get(pk=self.instance1.pk)

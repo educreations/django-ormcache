@@ -1,7 +1,12 @@
 import logging
 
+import django
 from django.core.cache import cache
 from django.db.models.query import QuerySet
+
+if django.VERSION >= (1, 7):
+    from django.db.models.lookups import Exact
+    from django.db.models.sql.datastructures import Col
 
 from ormcache.signals import cache_hit, cache_missed, cache_invalidated
 
@@ -19,8 +24,21 @@ class CachedQuerySet(QuerySet):
         'get()' method will be cached indefinitely (30 days) until invalidated.
         """
 
+        # If this queryset is filtered by a single column and no arguments
+        # were passed to get(), treat the queryset filter as an argument to
+        # get(). This lets Model.objects.filter(pk=42).get() work like
+        # Model.objects.get(pk=42).
+        if (len(self.query.where) == 1
+                and not kwargs
+                and django.VERSION >= (1, 7)
+                and not self.query.where.negated):
+            child, = self.query.where.children
+            if isinstance(child, Exact) and isinstance(child.lhs, Col):
+                self.query.where.children.pop()
+                kwargs[child.lhs.target.attname] = child.rhs
+
         # Don't access cache if using a filtered queryset
-        if len(self.query.where.children) > 0:
+        if self.query.where:
             return super(CachedQuerySet, self).get(*args, **kwargs)
 
         # Don't access cache if using a deferred queryset
