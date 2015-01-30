@@ -1,3 +1,4 @@
+import django
 from django.core.cache import cache
 from django.test import TestCase
 
@@ -18,16 +19,30 @@ class CachedQuerySetTestCase(TestCase):
         self.assertIsNone(cache.get(cache_key))
 
         # Use .get() after .filter() with no args, should set cache
-        CachedDummyModel.objects.filter().get(pk=self.instance1.pk)
+        with self.assertNumQueries(1):
+            CachedDummyModel.objects.filter().get(pk=self.instance1.pk)
+            CachedDummyModel.objects.filter().get(pk=self.instance1.pk)
         self.assertIsNotNone(cache.get(cache_key))
         cache.clear()
 
         # Use .get() after .filter(...), should not set cache
-        CachedDummyModel.objects.filter(pk__gt=0).get(pk=self.instance1.pk)
+        with self.assertNumQueries(2):
+            CachedDummyModel.objects.filter(pk__gt=0).get(pk=self.instance1.pk)
+            CachedDummyModel.objects.filter(pk__gt=0).get(pk=self.instance1.pk)
         self.assertIsNone(cache.get(cache_key))
 
+        # Use .get() after .filter(pk=), should set cache
+        if django.VERSION >= (1, 7):
+            with self.assertNumQueries(1):
+                CachedDummyModel.objects.filter(pk=self.instance1.pk).get()
+                CachedDummyModel.objects.filter(pk=self.instance1.pk).get()
+            self.assertIsNotNone(cache.get(cache_key))
+            cache.clear()
+
         # Use .get() normally, should set cache
-        CachedDummyModel.objects.get(pk=self.instance1.pk)
+        with self.assertNumQueries(1):
+            CachedDummyModel.objects.get(pk=self.instance1.pk)
+            CachedDummyModel.objects.get(pk=self.instance1.pk)
         self.assertIsNotNone(cache.get(cache_key))
 
     def test_from_ids_cache(self):

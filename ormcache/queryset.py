@@ -1,7 +1,12 @@
 import logging
 
+import django
 from django.core.cache import cache
 from django.db.models.query import QuerySet
+
+if django.VERSION >= (1, 7):
+    from django.db.models.lookups import Exact
+    from django.db.models.sql.datastructures import Col
 
 from ormcache.signals import cache_hit, cache_missed, cache_invalidated
 
@@ -19,14 +24,30 @@ class CachedQuerySet(QuerySet):
         'get()' method will be cached indefinitely (30 days) until invalidated.
         """
 
+        orig_kwargs = kwargs.copy()
+
+        # If this queryset is filtered by a single column and no arguments
+        # were passed to get(), treat the queryset filter as an argument to
+        # get(). This lets Model.objects.filter(pk=42).get() work like
+        # Model.objects.get(pk=42).
+        can_ignore_filter = False
+        if (len(self.query.where) == 1
+                and not kwargs
+                and django.VERSION >= (1, 7)
+                and not self.query.where.negated):
+            child, = self.query.where.children
+            if isinstance(child, Exact) and isinstance(child.lhs, Col):
+                can_ignore_filter = True
+                kwargs[child.lhs.target.attname] = child.rhs
+
         # Don't access cache if using a filtered queryset
-        if len(self.query.where.children) > 0:
-            return super(CachedQuerySet, self).get(*args, **kwargs)
+        if self.query.where and not can_ignore_filter:
+            return super(CachedQuerySet, self).get(*args, **orig_kwargs)
 
         # Don't access cache if using a deferred queryset
         if len(self.query.deferred_loading[0]) > 0 or \
                 not self.query.deferred_loading[1]:
-            return super(CachedQuerySet, self).get(*args, **kwargs)
+            return super(CachedQuerySet, self).get(*args, **orig_kwargs)
 
         # Get the cache key from the model name and pk
         if "pk" in kwargs:
@@ -38,7 +59,7 @@ class CachedQuerySet(QuerySet):
         elif "id__exact" in kwargs:
             pk = kwargs["id__exact"]
         else:
-            return super(CachedQuerySet, self).get(*args, **kwargs)
+            return super(CachedQuerySet, self).get(*args, **orig_kwargs)
 
         key = self.cache_key(pk)
 
@@ -46,7 +67,7 @@ class CachedQuerySet(QuerySet):
         item = cache.get(key)
         if item is None:
             cache_missed.send(sender=self.model)
-            item = super(CachedQuerySet, self).get(*args, **kwargs)
+            item = super(CachedQuerySet, self).get(*args, **orig_kwargs)
             cache.set(key, item, self.__CACHE_FOREVER)
         else:
             cache_hit.send(sender=self.model)
