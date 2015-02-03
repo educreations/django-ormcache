@@ -1,7 +1,12 @@
 Changelog
 =========
 
-V0.4
+v1.0
+----
+
+* Support ForeignKey lookups (when `use_for_related_fields = True` is set on the manager)
+
+v0.4
 ----
 
 * Python 3 support
