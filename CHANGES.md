@@ -1,7 +1,13 @@
 Changelog
 =========
 
-V0.4
+v1.0
+----
+
+* Limited handling of filtered querysets (`qs.filter(pk=42).get()`) on Django 1.7+.
+* Support ForeignKey lookups (when `use_for_related_fields = True` is set on the manager) on Django 1.7+.
+
+v0.4
 ----
 
 * Python 3 support
