@@ -1,16 +1,29 @@
-language: "python"
+language: python
+
 python:
    - "2.7"
    - "3.4"
    - "pypy"
    - "pypy3"
+
 install:
   - pip install -r requirements.txt
   - pip install Django==$DJANGO_VERSION coveralls
+
 env:
   - DJANGO_VERSION=1.6.5
   - DJANGO_VERSION=1.7.0
+
 script:
    "coverage run runtests.py"
+
 after_success:
    "coveralls"
+
+notifications:
+  hipchat:
+    format: html
+    template:
+    - ! '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    rooms:
+      secure: fcyF6eCJUjVKqbGLgE3lJXPVb+XCRcqIWFtspq9qdLT9mKY9RPZACN+vMajMfl8Wd3g90qDkvyWurEIwfDPZDDkYOK8aP/ZTqUAXl5pYzV4cs/CX2TjDXkiLeH/vfTXtGI5fR2zd6w7AyECxpUvFSh3O1hJCcxU123NtaAh5nEI=
