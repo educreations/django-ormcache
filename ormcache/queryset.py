@@ -1,3 +1,4 @@
+import collections
 import logging
 
 import django
@@ -75,6 +76,8 @@ class CachedQuerySet(QuerySet):
         return item
 
     def from_ids(self, ids, lookup='pk__in'):
+        assert isinstance(ids, collections.Iterable)
+        
         cache_keys = [self.cache_key(id_) for id_ in ids]
 
         instances = cache.get_many(cache_keys).values()
