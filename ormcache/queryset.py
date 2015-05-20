@@ -5,7 +5,10 @@ import django
 from django.core.cache import cache
 from django.db.models.query import QuerySet
 
-if django.VERSION >= (1, 7):
+if django.VERSION >= (1, 8):
+    from django.db.models.expressions import Col
+    from django.db.models.lookups import Exact
+elif django.VERSION >= (1, 7):
     from django.db.models.lookups import Exact
     from django.db.models.sql.datastructures import Col
 
