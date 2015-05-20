@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.0.1
+------
+
+* Support for Django 1.8
+
 v1.0
 ----
 
