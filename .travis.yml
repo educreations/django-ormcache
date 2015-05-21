@@ -8,11 +8,11 @@ python:
 
 install:
   - pip install -r requirements.txt
-  - pip install Django==$DJANGO_VERSION coveralls
+  - pip install Django$DJANGO_VERSION coveralls
 
 env:
-  - DJANGO_VERSION=1.7.0
-  - DJANGO_VERSION=1.8.1
+  - DJANGO_VERSION=">=1.7.0,<1.8.0"
+  - DJANGO_VERSION=">=1.8.0,<1.9.0"
 
 script:
    "coverage run runtests.py"
