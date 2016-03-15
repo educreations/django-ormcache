@@ -34,16 +34,12 @@ class CachedManagerMixin(object):
     # Django overrides
 
     def contribute_to_class(self, model, name):
-        """
-        Overrides Django builtin
-        """
+        """Override Django builtin"""
         super(CachedManagerMixin, self).contribute_to_class(model, name)
         class_prepared.connect(self.__class_prepared_cache, sender=model)
 
     def get_queryset(self):
-        """
-        Overrides Django builtin
-        """
+        """Override Django builtin"""
         if self.__cache_enabled:
             return CachedQuerySet(self.model)
         else:

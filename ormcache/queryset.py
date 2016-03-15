@@ -12,7 +12,7 @@ elif django.VERSION >= (1, 7):
     from django.db.models.lookups import Exact
     from django.db.models.sql.datastructures import Col
 
-from ormcache.signals import cache_hit, cache_missed, cache_invalidated
+from ormcache.signals import cache_hit, cache_missed, cache_invalidated  # noqa
 
 log = logging.getLogger(__name__)
 
@@ -35,10 +35,10 @@ class CachedQuerySet(QuerySet):
         # get(). This lets Model.objects.filter(pk=42).get() work like
         # Model.objects.get(pk=42).
         can_ignore_filter = False
-        if (len(self.query.where) == 1
-                and not kwargs
-                and django.VERSION >= (1, 7)
-                and not self.query.where.negated):
+        if (len(self.query.where) == 1 and
+                not kwargs and
+                django.VERSION >= (1, 7) and
+                not self.query.where.negated):
             child, = self.query.where.children
             if isinstance(child, Exact) and isinstance(child.lhs, Col):
                 can_ignore_filter = True
@@ -80,7 +80,7 @@ class CachedQuerySet(QuerySet):
 
     def from_ids(self, ids, lookup='pk__in'):
         assert isinstance(ids, collections.Iterable)
-        
+
         cache_keys = [self.cache_key(id_) for id_ in ids]
 
         instances = cache.get_many(cache_keys).values()
@@ -101,15 +101,11 @@ class CachedQuerySet(QuerySet):
         return [cached_dict[id_] for id_ in ids if id_ in cached_dict]
 
     def cache_key(self, pk):
-        """
-        Generate the cache key for an individual model
-        """
+        """Generate the cache key for an individual model"""
         return "{}-pk:{}".format(self.model.__name__, pk)
 
     def invalidate(self, pk, recache=False):
-        """
-        Invalidate a single item in the cache
-        """
+        """Invalidate a single item in the cache"""
         key = self.cache_key(pk)
         cache_invalidated.send(sender=self.model)
         if recache is True:
