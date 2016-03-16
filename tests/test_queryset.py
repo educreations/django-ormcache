@@ -2,7 +2,27 @@ import django
 from django.core.cache import cache
 from django.test import TestCase
 
-from tests.testapp.models import CachedDummyModel, OtherCachedDummyModel
+from tests.testapp.models import (
+    CachedDummyModel,
+    OtherCachedDummyModel,
+    UncachedDummyModel,
+)
+
+
+class UncachedModelQuerySetTestCase(TestCase):
+
+    def setUp(self):
+        self.instance = UncachedDummyModel.objects.create()
+        cache.clear()
+
+    def test_no_cache(self):
+        with self.assertNumQueries(1):
+            UncachedDummyModel.objects.get(pk=self.instance.pk)
+
+        # Should still be one query
+        with self.assertNumQueries(1):
+            UncachedDummyModel.objects.get(pk=self.instance.pk)
+
 
 
 class CachedQuerySetTestCase(TestCase):
