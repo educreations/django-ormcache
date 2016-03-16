@@ -27,7 +27,7 @@ setup(
     long_description=readme_text,
     packages=["ormcache"],
     package_dir={"ormcache": "ormcache"},
-    install_requires=['Django>=1.6'],
+    install_requires=['Django>=1.7'],
     classifiers=[
         'Framework :: Django',
         "Intended Audience :: Developers",
@@ -36,6 +36,7 @@ setup(
         "Programming Language :: Python",
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development',
     ]
 )
