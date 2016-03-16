@@ -40,7 +40,7 @@ if django.VERSION[:2] >= (1, 7):
 
 # Run tests
 
-from django.test.runner import DiscoverRunner
+from django.test.runner import DiscoverRunner  # noqa
 
 test_runner = DiscoverRunner(verbosity=1)
 test_runner.setup_databases()

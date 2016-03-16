@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v1.1
+------
+
+* Support for Django 1.9
+* PEP8 cleanup
+* Support for Python 3.5
+* Drop support for Django < 1.7
+
 v1.0.1
 ------
 

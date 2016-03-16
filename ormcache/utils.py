@@ -1,10 +1,12 @@
-from django.db.models.fields.related import SingleRelatedObjectDescriptor
+try:
+    from django.db.models.fields.related import SingleRelatedObjectDescriptor
+except ImportError:
+    from django.db.models.fields.related_descriptors import (
+        ReverseOneToOneDescriptor as SingleRelatedObjectDescriptor)
 
 
 def _distinct(l):
-    """
-    Given an iterable will return a list of all distinct values.
-    """
+    """Given an iterable will return a list of all distinct values."""
     return list(set(l))
 
 

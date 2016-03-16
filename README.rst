@@ -4,8 +4,8 @@ Django ORMCache
 .. image:: https://travis-ci.org/educreations/django-ormcache.svg?branch=master
    :target: https://travis-ci.org/educreations/django-ormcache
 
-.. image:: https://coveralls.io/repos/educreations/django-ormcache/badge.png?branch=master
-   :target: https://coveralls.io/r/educreations/django-ormcache?branch=master
+.. image:: https://coveralls.io/repos/github/educreations/django-ormcache/badge.svg?branch=master
+   :target: https://coveralls.io/github/educreations/django-ormcache?branch=master
 
 A cache manager mixin that provides some caching of objects for the ORM.
 
@@ -30,4 +30,4 @@ Run the tests with:
 License
 -------
 
-Copyright © 2014, Educreations, Inc under the `MIT <LICENSE>`_.
+Copyright © 2016, Educreations, Inc under the `MIT <LICENSE>`_.

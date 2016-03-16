@@ -46,3 +46,14 @@ class SignalsTestCase(TestCase):
         instance.title = "hello"
         instance.save()  # invalidate
         self.assertEquals(1, self.call_count)
+
+    def test_cache_invalidate_on_delete_signal(self):
+        cache_invalidated.connect(self._signal_receiver(), weak=False)
+
+        # Cache miss
+        instance = CachedDummyModel.objects.get(pk=self.instance_pk)
+        self.assertEquals(0, self.call_count)
+
+        # Delete the object
+        instance.delete()
+        self.assertEquals(1, self.call_count)
