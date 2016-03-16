@@ -43,17 +43,7 @@ class CachedManagerMixin(object):
         if self.__cache_enabled:
             return CachedQuerySet(self.model)
         else:
-            super_ = super(CachedManagerMixin, self)
-
-            if hasattr(super_, "get_queryset"):
-                # Django > 1.6
-                return super_.get_queryset()
-
-            # Django <= 1.5
-            return super_.get_query_set()
-
-    # Support for Django <= 1.5
-    get_query_set = get_queryset
+            return super(CachedManagerMixin, self).get_queryset()
 
     # Signals
 
