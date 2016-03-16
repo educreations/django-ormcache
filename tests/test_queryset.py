@@ -2,7 +2,7 @@ import django
 from django.core.cache import cache
 from django.test import TestCase
 
-from tests.testapp.models import CachedDummyModel
+from tests.testapp.models import CachedDummyModel, OtherCachedDummyModel
 
 
 class CachedQuerySetTestCase(TestCase):
@@ -99,3 +99,36 @@ class CachedQuerySetTestCase(TestCase):
             title = CachedDummyModel.objects.get(pk=self.instance1.pk).title
 
         self.assertEqual(self.instance1.title, title)
+
+
+class CachedQuerySetRelatedTestCase(TestCase):
+
+    def setUp(self):
+        self.other_dummy = OtherCachedDummyModel.objects.create()
+        self.dummy = CachedDummyModel.objects.create()
+        self.dummy.related = self.other_dummy
+        self.dummy.save()
+        cache.clear()
+
+    def test_no_related_cache(self):
+        with self.assertNumQueries(2):
+            instance = OtherCachedDummyModel.objects.get(
+                pk=self.other_dummy.pk)
+            related_pks = [
+                related.pk for related in instance.cacheddummymodel_set.all()]
+            self.assertIn(self.dummy.pk, related_pks)
+
+        with self.assertNumQueries(1):
+            list(OtherCachedDummyModel.objects.get(
+                pk=self.other_dummy.pk).cacheddummymodel_set.all())
+
+    def test_related_cache(self):
+        with self.assertNumQueries(2):
+            self.assertEqual(
+                self.other_dummy.pk,
+                CachedDummyModel.objects.get(pk=self.dummy.pk).related.pk)
+
+        with self.assertNumQueries(0):
+            self.assertEqual(
+                self.other_dummy.pk,
+                CachedDummyModel.objects.get(pk=self.dummy.pk).related.pk)
