@@ -24,7 +24,6 @@ class UncachedModelQuerySetTestCase(TestCase):
             UncachedDummyModel.objects.get(pk=self.instance.pk)
 
 
-
 class CachedQuerySetTestCase(TestCase):
 
     def setUp(self):
@@ -59,11 +58,23 @@ class CachedQuerySetTestCase(TestCase):
             self.assertIsNotNone(cache.get(cache_key))
             cache.clear()
 
-        # Use .get() normally, should set cache
-        with self.assertNumQueries(1):
-            CachedDummyModel.objects.get(pk=self.instance1.pk)
-            CachedDummyModel.objects.get(pk=self.instance1.pk)
-        self.assertIsNotNone(cache.get(cache_key))
+        # Use .get() with another getter and modifier
+        with self.assertNumQueries(2):
+            kwargs = {
+                'pk__gte': self.instance1.pk, 'pk__lte': self.instance1.pk}
+            CachedDummyModel.objects.get(**kwargs)
+            CachedDummyModel.objects.get(**kwargs)
+        self.assertIsNone(cache.get(cache_key))
+
+        # Use .get() with various pk getters, and cache should be set
+        for pk_id in ('pk', 'id'):
+            for modifier in ('', '__exact'):
+                with self.assertNumQueries(1):
+                    kwargs = {'{}{}'.format(pk_id, modifier): self.instance1.pk}
+                    CachedDummyModel.objects.get(**kwargs)
+                    CachedDummyModel.objects.get(**kwargs)
+                self.assertIsNotNone(cache.get(cache_key))
+                cache.clear()
 
     def test_from_ids_cache(self):
         with self.assertNumQueries(1):
