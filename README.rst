@@ -30,4 +30,4 @@ Run the tests with:
 License
 -------
 
-Copyright © 2014, Educreations, Inc under the `MIT <LICENSE>`_.
+Copyright © 2016, Educreations, Inc under the `MIT <LICENSE>`_.
