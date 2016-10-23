@@ -130,6 +130,32 @@ class CachedQuerySetTestCase(TestCase):
             title = CachedDummyModel.objects.get(pk=self.instance1.pk).title
 
         self.assertEqual(self.instance1.title, title)
+        cache.clear()
+
+    def test_invalidated_after_delete(self):
+        # Get the cache key for an instance, make sure it doesn't exist
+        cache_key = CachedDummyModel.objects.cache_key(self.instance1.pk)
+        self.assertIsNone(cache.get(cache_key))
+
+        instance_pk = self.instance1.pk
+
+        with self.assertNumQueries(1):
+            CachedDummyModel.objects.get(pk=self.instance1.pk)
+
+        # Delete the instance
+        with self.assertNumQueries(1):
+            self.instance1.delete()
+
+        # Nothing should be in the cache
+        self.assertIsNone(cache.get(cache_key))
+
+        # Fetching should raise
+        with self.assertRaises(CachedDummyModel.DoesNotExist):
+            CachedDummyModel.objects.get(pk=instance_pk)
+
+        # Make sure that invalidation does not raise an exception
+        CachedDummyModel.objects.invalidate(pk=instance_pk, recache=True)
+        self.assertIsNone(cache.get(cache_key))
 
 
 class CachedQuerySetRelatedTestCase(TestCase):
