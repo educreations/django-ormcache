@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v1.1.1
+------
+
+* Test on Django 1.10 [#40](https://github.com/educreations/django-ormcache/pull/40)
+* Invalidation after delete does not log an error [#41](https://github.com/educreations/django-ormcache/pull/41)
+
 v1.1
 ------
 
