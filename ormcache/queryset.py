@@ -111,8 +111,12 @@ class CachedQuerySet(QuerySet):
         if recache is True:
             try:
                 entry = super(CachedQuerySet, self).get(pk=pk)
-            except (self.model.DoesNotExist,
-                    self.model.MultipleObjectsReturned):
+            except self.model.DoesNotExist:
+                log.info(
+                    'Unable to recache model during invalidate',
+                    exc_info=True,
+                    extra={'data': {'model': self.model, 'pk': pk}})
+            except self.model.MultipleObjectsReturned:
                 log.error(
                     'Error retrieving single entry from database',
                     exc_info=True,
