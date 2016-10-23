@@ -15,6 +15,7 @@ env:
   - DJANGO_VERSION=">=1.7.0,<1.8.0"
   - DJANGO_VERSION=">=1.8.0,<1.9.0"
   - DJANGO_VERSION=">=1.9.0,<1.10.0"
+  - DJANGO_VERSION=">=1.10.0,<1.11.0"
 
 matrix:
   exclude:
@@ -22,6 +23,8 @@ matrix:
       env: DJANGO_VERSION=">=1.7.0,<1.8.0"
     - python: "pypy3"
       env: DJANGO_VERSION=">=1.9.0,<1.10.0"
+    - python: "pypy3"
+      env: DJANGO_VERSION=">=1.10.0,<1.11.0"
 
 script:
    "coverage run runtests.py"
