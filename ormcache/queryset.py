@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 class CachedQuerySet(QuerySet):
 
+    __MAXIMUM_CACHE_KEY_LENGTH = 250
     __CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
 
     def get(self, *args, **kwargs):
@@ -102,7 +103,13 @@ class CachedQuerySet(QuerySet):
 
     def cache_key(self, pk):
         """Generate the cache key for an individual model"""
-        return "{}-pk:{}".format(self.model.__name__, pk)
+        key = "{}-pk:{}".format(self.model.__name__, pk)
+
+        # We shouldn't have keys that are crazy long. This might mean
+        # we get duplicates though
+        key = key[:self.__MAXIMUM_CACHE_KEY_LENGTH]
+
+        return key
 
     def invalidate(self, pk, recache=False):
         """Invalidate a single item in the cache"""
