@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.2
+----
+
+* Truncate cache keys to 250 characters, as Memcache requires smaller keys
+
 v1.1.1
 ------
 
