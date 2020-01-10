@@ -6,8 +6,8 @@ import sys
 from setuptools import setup
 
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py register sdist bdist_wheel upload')
+if sys.argv[-1] == "publish":
+    os.system("python setup.py register sdist bdist_wheel upload")
     sys.exit()
 
 
@@ -27,16 +27,15 @@ setup(
     long_description=readme_text,
     packages=["ormcache"],
     package_dir={"ormcache": "ormcache"},
-    install_requires=['Django>=1.7'],
+    install_requires=["Django>=1.9"],
     classifiers=[
-        'Framework :: Django',
+        "Framework :: Django",
         "Intended Audience :: Developers",
-        'License :: OSI Approved :: MIT License',
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Topic :: Software Development',
-    ]
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Topic :: Software Development",
+    ],
 )
