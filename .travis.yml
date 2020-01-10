@@ -2,8 +2,9 @@ language: python
 
 python:
    - "2.7"
-   - "3.4"
-   - "3.5"
+   - "3.6"
+   - "3.7"
+   - "3.8"
    - "pypy"
    - "pypy3"
 
@@ -12,17 +13,15 @@ install:
   - pip install Django$DJANGO_VERSION coveralls
 
 env:
-  - DJANGO_VERSION=">=1.7.0,<1.8.0"
   - DJANGO_VERSION=">=1.8.0,<1.9.0"
   - DJANGO_VERSION=">=1.9.0,<1.10.0"
   - DJANGO_VERSION=">=1.10.0,<1.11.0"
+  - DJANGO_VERSION=">=2.0.0,<2.1.0"
+  - DJANGO_VERSION=">=2.1.0,<2.2.0"
 
 matrix:
   exclude:
-    - python: "3.5"
-      env: DJANGO_VERSION=">=1.7.0,<1.8.0"
-    - python: "pypy3"
-      env: DJANGO_VERSION=">=1.7.0,<1.8.0"
+      env: DJANGO_VERSION=">=1.8.0,<1.9.0"
     - python: "pypy3"
       env: DJANGO_VERSION=">=1.9.0,<1.10.0"
     - python: "pypy3"
@@ -33,11 +32,3 @@ script:
 
 after_success:
    "coveralls"
-
-notifications:
-  hipchat:
-    format: html
-    template:
-    - ! '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
-    rooms:
-      secure: fcyF6eCJUjVKqbGLgE3lJXPVb+XCRcqIWFtspq9qdLT9mKY9RPZACN+vMajMfl8Wd3g90qDkvyWurEIwfDPZDDkYOK8aP/ZTqUAXl5pYzV4cs/CX2TjDXkiLeH/vfTXtGI5fR2zd6w7AyECxpUvFSh3O1hJCcxU123NtaAh5nEI=
