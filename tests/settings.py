@@ -21,24 +21,22 @@ DATABASES = {
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'localhost',
-        'OPTIONS': {
-            'MAX_ENTRIES': 2 ** 32,
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "localhost",
+        "OPTIONS": {
+            "MAX_ENTRIES": 2**32,
         },
     }
 }
 
 ROOT_URLCONF = "tests.urls"
 INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'ormcache',
-    'tests.testapp',
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "ormcache",
+    "tests.testapp",
 ]
 
-MIDDLEWARE = (
-    "django.middleware.common.CommonMiddleware",
-)
+MIDDLEWARE = ("django.middleware.common.CommonMiddleware",)

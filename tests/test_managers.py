@@ -4,7 +4,6 @@ from tests.testapp.models import CachedDummyModel, UncachedDummyModel
 
 
 class BaseManagerCacheTestCase(SimpleTestCase):
-
     def test_cache_key_on_uncached(self):
         with self.assertRaises(RuntimeError):
             UncachedDummyModel.objects.cache_key(1)

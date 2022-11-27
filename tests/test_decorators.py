@@ -5,7 +5,6 @@ from ormcache.decorators import cache_result
 
 
 class DecoratorsCacheTestCase(SimpleTestCase):
-
     def test_cache_result(self):
         call_counts = [0]
         value = {"hello": "world"}

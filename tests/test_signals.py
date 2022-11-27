@@ -6,7 +6,6 @@ from tests.testapp.models import CachedDummyModel
 
 
 class SignalsTestCase(TestCase):
-
     def setUp(self):
         self.call_count = 0
         self.instance_pk = CachedDummyModel.objects.create().pk
@@ -15,6 +14,7 @@ class SignalsTestCase(TestCase):
     def _signal_receiver(self):
         def inner(*args, **kwargs):
             self.call_count += 1
+
         return inner
 
     def test_cache_hit_signal(self):
