@@ -1,3 +1,4 @@
+import django
 from django.db import models
 
 from tests.testapp.managers import DummyManager
@@ -15,8 +16,9 @@ class CachedDummyModel(models.Model):
     objects = DummyManager()
 
     class Meta(object):
-        base_manager_name = 'objects'
-        default_manager_name = 'objects'
+        if django.VERSION >= (1, 10):
+            base_manager_name = 'objects'
+            default_manager_name = 'objects'
 
 
 class OtherCachedDummyModel(models.Model):
@@ -26,8 +28,9 @@ class OtherCachedDummyModel(models.Model):
     objects = DummyManager()
 
     class Meta(object):
-        base_manager_name = 'objects'
-        default_manager_name = 'objects'
+        if django.VERSION >= (1, 10):
+            base_manager_name = 'objects'
+            default_manager_name = 'objects'
 
 
 class UncachedDummyModel(models.Model):
@@ -38,5 +41,6 @@ class UncachedDummyModel(models.Model):
     objects = DummyManager()
 
     class Meta(object):
-        base_manager_name = 'objects'
-        default_manager_name = 'objects'
+        if django.VERSION >= (1, 10):
+            base_manager_name = 'objects'
+            default_manager_name = 'objects'

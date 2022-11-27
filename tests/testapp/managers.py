@@ -1,3 +1,4 @@
+import django
 from django.db import models
 
 from ormcache.managers import CachedManagerMixin
@@ -5,5 +6,5 @@ from ormcache.managers import CachedManagerMixin
 
 class DummyManager(CachedManagerMixin, models.Manager):
 
-    # Remove after Django 1.10 is the only supported backend
-    use_for_related_fields = True
+    if django.VERSION < (1, 10):
+        use_for_related_fields = True
