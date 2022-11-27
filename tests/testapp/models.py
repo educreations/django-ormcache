@@ -14,12 +14,20 @@ class CachedDummyModel(models.Model):
 
     objects = DummyManager()
 
+    class Meta(object):
+        base_manager_name = 'objects'
+        default_manager_name = 'objects'
+
 
 class OtherCachedDummyModel(models.Model):
 
     cache_enabled = True
 
     objects = DummyManager()
+
+    class Meta(object):
+        base_manager_name = 'objects'
+        default_manager_name = 'objects'
 
 
 class UncachedDummyModel(models.Model):
@@ -28,3 +36,7 @@ class UncachedDummyModel(models.Model):
     summary = models.CharField(max_length=400)
 
     objects = DummyManager()
+
+    class Meta(object):
+        base_manager_name = 'objects'
+        default_manager_name = 'objects'

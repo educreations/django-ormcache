@@ -36,22 +36,30 @@ class CachedQuerySet(QuerySet):
         # get(). This lets Model.objects.filter(pk=42).get() work like
         # Model.objects.get(pk=42).
         can_ignore_filter = False
-        if (len(self.query.where) == 1 and
-                not kwargs and
-                django.VERSION >= (1, 7) and
-                not self.query.where.negated):
-            child, = self.query.where.children
-            if isinstance(child, Exact) and isinstance(child.lhs, Col):
+        if django.VERSION >= (1, 7) and not kwargs:
+            if len(self.query.where) == 1 and not self.query.where.negated:
+                (child,) = self.query.where.children
+                if isinstance(child, Exact) and isinstance(child.lhs, Col):
+                    can_ignore_filter = True
+                    kwargs[child.lhs.target.attname] = child.rhs
+            elif (
+                len(args) == 1
+                and len(args[0].children) == 1
+                and len(args[0].children[0]) == 2
+                and args[0].children[0][0] == "id"
+            ):
                 can_ignore_filter = True
-                kwargs[child.lhs.target.attname] = child.rhs
+                kwargs[args[0].children[0][0]] = args[0].children[0][1]
 
         # Don't access cache if using a filtered queryset
         if self.query.where and not can_ignore_filter:
             return super(CachedQuerySet, self).get(*args, **orig_kwargs)
 
         # Don't access cache if using a deferred queryset
-        if len(self.query.deferred_loading[0]) > 0 or \
-                not self.query.deferred_loading[1]:
+        if (
+            len(self.query.deferred_loading[0]) > 0
+            or not self.query.deferred_loading[1]
+        ):
             return super(CachedQuerySet, self).get(*args, **orig_kwargs)
 
         # Get the cache key from the model name and pk
@@ -79,7 +87,7 @@ class CachedQuerySet(QuerySet):
 
         return item
 
-    def from_ids(self, ids, lookup='pk__in'):
+    def from_ids(self, ids, lookup="pk__in"):
         assert isinstance(ids, collections.Iterable)
 
         cache_keys = [self.cache_key(id_) for id_ in ids]
@@ -107,7 +115,7 @@ class CachedQuerySet(QuerySet):
 
         # We shouldn't have keys that are crazy long. This might mean
         # we get duplicates though
-        key = key[:self.__MAXIMUM_CACHE_KEY_LENGTH]
+        key = key[: self.__MAXIMUM_CACHE_KEY_LENGTH]
 
         return key
 
@@ -120,14 +128,16 @@ class CachedQuerySet(QuerySet):
                 entry = super(CachedQuerySet, self).get(pk=pk)
             except self.model.DoesNotExist:
                 log.info(
-                    'Unable to recache model during invalidate',
+                    "Unable to recache model during invalidate",
                     exc_info=True,
-                    extra={'data': {'model': self.model, 'pk': pk}})
+                    extra={"data": {"model": self.model, "pk": pk}},
+                )
             except self.model.MultipleObjectsReturned:
                 log.error(
-                    'Error retrieving single entry from database',
+                    "Error retrieving single entry from database",
                     exc_info=True,
-                    extra={'data': {'model': self.model, 'pk': pk}})
+                    extra={"data": {"model": self.model, "pk": pk}},
+                )
             else:
                 cache.set(key, entry, self.__CACHE_FOREVER)
         else:
