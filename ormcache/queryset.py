@@ -1,4 +1,8 @@
-import collections
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
+
 import logging
 
 import django
@@ -88,7 +92,7 @@ class CachedQuerySet(QuerySet):
         return item
 
     def from_ids(self, ids, lookup="pk__in"):
-        assert isinstance(ids, collections.Iterable)
+        assert isinstance(ids, Iterable)
 
         cache_keys = [self.cache_key(id_) for id_ in ids]
 

@@ -22,38 +22,38 @@ class SignalsTestCase(TestCase):
 
         # Cache miss
         CachedDummyModel.objects.get(pk=self.instance_pk)
-        self.assertEquals(0, self.call_count)
+        self.assertEqual(0, self.call_count)
 
         # Cache hit
         CachedDummyModel.objects.get(pk=self.instance_pk)
-        self.assertEquals(1, self.call_count)
+        self.assertEqual(1, self.call_count)
 
     def test_cache_missed_signal(self):
         cache_missed.connect(self._signal_receiver(), weak=False)
 
         # Cache miss
         CachedDummyModel.objects.get(pk=self.instance_pk)
-        self.assertEquals(1, self.call_count)
+        self.assertEqual(1, self.call_count)
 
     def test_cache_invalidated_signal(self):
         cache_invalidated.connect(self._signal_receiver(), weak=False)
 
         # Cache miss
         instance = CachedDummyModel.objects.get(pk=self.instance_pk)
-        self.assertEquals(0, self.call_count)
+        self.assertEqual(0, self.call_count)
 
         # Save the object
         instance.title = "hello"
         instance.save()  # invalidate
-        self.assertEquals(1, self.call_count)
+        self.assertEqual(1, self.call_count)
 
     def test_cache_invalidate_on_delete_signal(self):
         cache_invalidated.connect(self._signal_receiver(), weak=False)
 
         # Cache miss
         instance = CachedDummyModel.objects.get(pk=self.instance_pk)
-        self.assertEquals(0, self.call_count)
+        self.assertEqual(0, self.call_count)
 
         # Delete the object
         instance.delete()
-        self.assertEquals(1, self.call_count)
+        self.assertEqual(1, self.call_count)
