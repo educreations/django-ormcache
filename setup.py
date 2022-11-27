@@ -15,7 +15,7 @@ readme_text = open("README.rst", "r").read()
 
 setup(
     name="django-ormcache",
-    version="1.2",
+    version="1.2.1",
     description="ORM cache for Django",
     license="MIT",
     keywords="cache django",
@@ -27,7 +27,7 @@ setup(
     long_description=readme_text,
     packages=["ormcache"],
     package_dir={"ormcache": "ormcache"},
-    install_requires=["Django>=1.9,<2.0"],
+    install_requires=["Django>=1.9,<4.0"],
     classifiers=[
         "Framework :: Django",
         "Intended Audience :: Developers",
