@@ -5,7 +5,6 @@ from ormcache.queryset import CachedQuerySet
 
 
 class CachedManagerMixin(object):
-
     @cached_property
     def __cache_enabled(self):
         return getattr(self.model, "cache_enabled", False)
@@ -16,10 +15,11 @@ class CachedManagerMixin(object):
                 error = "Caching is not enabled on {}".format(str(type(self)))
                 raise RuntimeError(error)
             return func(self, *args, **kwargs)
+
         return wrapper
 
     @__require_cache
-    def from_ids(self, ids, lookup='pk__in', **kwargs):
+    def from_ids(self, ids, lookup="pk__in", **kwargs):
         queryset = self.get_queryset()
         return queryset.from_ids(ids, lookup=lookup, **kwargs)
 
@@ -49,10 +49,8 @@ class CachedManagerMixin(object):
 
     def __class_prepared_cache(self, sender, **kwargs):
         if self.__cache_enabled:
-            post_save.connect(self.__post_save_cache,
-                              sender=self.model, weak=False)
-            post_delete.connect(self.__post_delete_cache,
-                                sender=self.model, weak=False)
+            post_save.connect(self.__post_save_cache, sender=self.model, weak=False)
+            post_delete.connect(self.__post_delete_cache, sender=self.model, weak=False)
 
     def __post_save_cache(self, instance, created, **kwargs):
         self.invalidate(instance.pk, recache=True)

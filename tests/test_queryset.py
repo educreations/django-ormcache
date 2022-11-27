@@ -10,7 +10,6 @@ from tests.testapp.models import (
 
 
 class UncachedModelQuerySetTestCase(TestCase):
-
     def setUp(self):
         self.instance = UncachedDummyModel.objects.create()
         cache.clear()
@@ -25,7 +24,6 @@ class UncachedModelQuerySetTestCase(TestCase):
 
 
 class CachedQuerySetTestCase(TestCase):
-
     def setUp(self):
         self.instance1 = CachedDummyModel.objects.create()
         self.instance2 = CachedDummyModel.objects.create()
@@ -60,17 +58,16 @@ class CachedQuerySetTestCase(TestCase):
 
         # Use .get() with another getter and modifier
         with self.assertNumQueries(2):
-            kwargs = {
-                'pk__gte': self.instance1.pk, 'pk__lte': self.instance1.pk}
+            kwargs = {"pk__gte": self.instance1.pk, "pk__lte": self.instance1.pk}
             CachedDummyModel.objects.get(**kwargs)
             CachedDummyModel.objects.get(**kwargs)
         self.assertIsNone(cache.get(cache_key))
 
         # Use .get() with various pk getters, and cache should be set
-        for pk_id in ('pk', 'id'):
-            for modifier in ('', '__exact'):
+        for pk_id in ("pk", "id"):
+            for modifier in ("", "__exact"):
                 with self.assertNumQueries(1):
-                    kwargs = {'{}{}'.format(pk_id, modifier): self.instance1.pk}
+                    kwargs = {"{}{}".format(pk_id, modifier): self.instance1.pk}
                     CachedDummyModel.objects.get(**kwargs)
                     CachedDummyModel.objects.get(**kwargs)
                 self.assertIsNotNone(cache.get(cache_key))
@@ -117,8 +114,7 @@ class CachedQuerySetTestCase(TestCase):
         CachedDummyModel.objects.defer("title").get(pk=self.instance1.pk)
 
         with self.assertNumQueries(1):
-            summary = CachedDummyModel.objects.get(
-                pk=self.instance1.pk).summary
+            summary = CachedDummyModel.objects.get(pk=self.instance1.pk).summary
 
         self.assertEqual(self.instance1.summary, summary)
 
@@ -159,7 +155,6 @@ class CachedQuerySetTestCase(TestCase):
 
 
 class CachedQuerySetRelatedTestCase(TestCase):
-
     def setUp(self):
         self.other_dummy = OtherCachedDummyModel.objects.create()
         self.dummy = CachedDummyModel.objects.create()
@@ -169,23 +164,28 @@ class CachedQuerySetRelatedTestCase(TestCase):
 
     def test_no_related_cache(self):
         with self.assertNumQueries(2):
-            instance = OtherCachedDummyModel.objects.get(
-                pk=self.other_dummy.pk)
+            instance = OtherCachedDummyModel.objects.get(pk=self.other_dummy.pk)
             related_pks = [
-                related.pk for related in instance.cacheddummymodel_set.all()]
+                related.pk for related in instance.cacheddummymodel_set.all()
+            ]
             self.assertIn(self.dummy.pk, related_pks)
 
         with self.assertNumQueries(1):
-            list(OtherCachedDummyModel.objects.get(
-                pk=self.other_dummy.pk).cacheddummymodel_set.all())
+            list(
+                OtherCachedDummyModel.objects.get(
+                    pk=self.other_dummy.pk
+                ).cacheddummymodel_set.all()
+            )
 
     def test_related_cache(self):
         with self.assertNumQueries(2):
             self.assertEqual(
                 self.other_dummy.pk,
-                CachedDummyModel.objects.get(pk=self.dummy.pk).related.pk)
+                CachedDummyModel.objects.get(pk=self.dummy.pk).related.pk,
+            )
 
         with self.assertNumQueries(0):
             self.assertEqual(
                 self.other_dummy.pk,
-                CachedDummyModel.objects.get(pk=self.dummy.pk).related.pk)
+                CachedDummyModel.objects.get(pk=self.dummy.pk).related.pk,
+            )

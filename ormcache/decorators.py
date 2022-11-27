@@ -31,21 +31,27 @@ def cache_result(ttl=60 * 5, key=None):
         return expensive_result
     --------------------------------------------------------------------------
     """
+
     def decorator(func):
         @wraps(func)
         def inner(*args, **kwargs):
             key_ = key
             if key_ is None:
-                func_signature = (str(func.__module__) + str(func.__name__) +
-                                  str(args) + str(kwargs)).encode("utf8")
+                func_signature = (
+                    str(func.__module__) + str(func.__name__) + str(args) + str(kwargs)
+                ).encode("utf8")
                 key_ = sha1(func_signature).hexdigest()
             result = cache.get(key_)
             if result is None:
                 result = func(*args, **kwargs)
                 if result is None:
-                    log.error("Function decorated by @cache_result returned "
-                              "None", extra={'function': func.__name__})
+                    log.error(
+                        "Function decorated by @cache_result returned " "None",
+                        extra={"function": func.__name__},
+                    )
                 cache.set(key_, result, ttl)
             return result
+
         return inner
+
     return decorator
