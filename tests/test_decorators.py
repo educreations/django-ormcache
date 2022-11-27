@@ -16,13 +16,13 @@ class DecoratorsCacheTestCase(SimpleTestCase):
 
         result = random_function()
         self.assertTrue(value, result)
-        self.assertEquals(1, call_counts[0])
+        self.assertEqual(1, call_counts[0])
 
         result = random_function()
         self.assertTrue(value, result)
-        self.assertEquals(1, call_counts[0])
+        self.assertEqual(1, call_counts[0])
 
         cache.clear()
         result = random_function()
         self.assertTrue(value, result)
-        self.assertEquals(2, call_counts[0])
+        self.assertEqual(2, call_counts[0])
