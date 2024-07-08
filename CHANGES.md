@@ -1,6 +1,24 @@
 Changelog
 =========
 
+v1.3
+----
+
+* Test on Django 2.0 through 4.2.
+* Test on Python 3.7 through 3.12
+* Stop testing on Python 2.7 and 3.6
+* Stop testing and drop support for Django 1.9 and 1.10
+
+v1.2.2
+----
+
+* TBD
+
+v1.2.1
+----
+
+* TBD
+
 v1.2
 ----
 
