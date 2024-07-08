@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 try:
     from collections.abc import Iterable
 except ImportError:
@@ -22,7 +24,6 @@ log = logging.getLogger(__name__)
 
 
 class CachedQuerySet(QuerySet):
-
     __MAXIMUM_CACHE_KEY_LENGTH = 250
     __CACHE_FOREVER = 2592000  # http://ur1.ca/egyvu
 

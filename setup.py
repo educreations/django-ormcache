@@ -27,7 +27,7 @@ setup(
     long_description=readme_text,
     packages=["ormcache"],
     package_dir={"ormcache": "ormcache"},
-    install_requires=["Django>=1.9,<4.2"],
+    install_requires=["Django>=1.9,<5.0", "six"],
     classifiers=[
         "Framework :: Django",
         "Intended Audience :: Developers",
@@ -38,4 +38,6 @@ setup(
         "Programming Language :: Python :: 3",
         "Topic :: Software Development",
     ],
+    extras_require={"test": ["tox", "pytest", "pytest-django", "flake8"]},
+    tests_require=["django-ormcache[test]"],
 )

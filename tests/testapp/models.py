@@ -5,7 +5,6 @@ from tests.testapp.managers import DummyManager
 
 
 class CachedDummyModel(models.Model):
-
     cache_enabled = True
 
     title = models.CharField(max_length=50)
@@ -24,7 +23,6 @@ class CachedDummyModel(models.Model):
 
 
 class OtherCachedDummyModel(models.Model):
-
     cache_enabled = True
 
     objects = DummyManager()
@@ -36,7 +34,6 @@ class OtherCachedDummyModel(models.Model):
 
 
 class UncachedDummyModel(models.Model):
-
     title = models.CharField(max_length=50)
     summary = models.CharField(max_length=400)
 
