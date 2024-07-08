@@ -1,17 +1,7 @@
-#!/usr/bin/env python
-
-import os
-import sys
-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
-if sys.argv[-1] == "publish":
-    os.system("python setup.py register sdist bdist_wheel upload")
-    sys.exit()
-
-
-readme_text = open("README.rst", "r").read()
+readme_text = open("README.md", "r").read()
 
 setup(
     name="django-ormcache",
@@ -25,8 +15,10 @@ setup(
     maintainer_email="engineering@educreations.com",
     url="https://github.com/educreations/django-ormcache",
     long_description=readme_text,
-    packages=["ormcache"],
+    long_description_content_type="text/markdown",
+    packages=find_packages(where="ormcache"),
     package_dir={"ormcache": "ormcache"},
+    python_requires=">=3.7, <4",
     install_requires=["Django>=2.0,<5.0", "six"],
     classifiers=[
         "Framework :: Django",
@@ -39,4 +31,9 @@ setup(
     ],
     extras_require={"test": ["tox", "pytest", "pytest-django", "flake8"]},
     tests_require=["django-ormcache[test]"],
+    project_urls={
+        "Homepage": "https://github.com/educreations/django-ormcache",
+        "Issues": "https://github.com/educreations/django-ormcache/issues",
+        "Changelog": "https://github.com/educreations/django-ormcache/blob/master/CHANGES.md",
+    },
 )
