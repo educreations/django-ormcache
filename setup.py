@@ -5,7 +5,7 @@ readme_text = open("README.md", "r").read()
 
 setup(
     name="django-ormcache",
-    version="1.3",
+    version="1.3.1",
     description="ORM cache for Django",
     license="MIT",
     keywords="cache django",
@@ -16,7 +16,7 @@ setup(
     url="https://github.com/educreations/django-ormcache",
     long_description=readme_text,
     long_description_content_type="text/markdown",
-    packages=find_packages(where="ormcache"),
+    packages=find_packages(exclude=["tests"]),
     package_dir={"ormcache": "ormcache"},
     python_requires=">=3.7, <4",
     install_requires=["Django>=2.0,<5.0", "six"],
