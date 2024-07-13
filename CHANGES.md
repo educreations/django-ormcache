@@ -1,6 +1,16 @@
 Changelog
 =========
 
+v1.3.2
+----
+
+Another publish fix
+
+v1.3.1
+----
+
+Unpublish.
+
 v1.3
 ----
 
