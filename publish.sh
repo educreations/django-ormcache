@@ -2,8 +2,8 @@
 
 rm -rf build dist django_ormcache.egg-info
 
-pip install -U setuptools wheel build
+uv pip install -U setuptools wheel
 
-python -m build .
+uv build
 
-twine upload dist/*
+uv publish
