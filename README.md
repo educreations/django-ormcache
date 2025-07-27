@@ -2,10 +2,14 @@
 
 A cache manager mixin that provides some caching of objects for the ORM.
 
+https://pypi.org/project/django-ormcache/
+
 
 # Installation / Setup / Usage
 
-TODO
+```
+pip install django-ormcache
+```
 
 
 # Testing
@@ -19,4 +23,4 @@ tox
 
 # License
 
-Copyright © 2024, Educreations, Inc under the [MIT](LICENSE).
+Copyright © 2025, Educreations, Inc under the [MIT](LICENSE).
