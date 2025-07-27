@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v1.4
+----
+
+* Test on Django 4.2 through 5.2
+* Test on Python 3.8 through 3.12
+* Drop support for Django < 4.2 and Python < 3.8
+
+
 v1.3.2
 ----
 
