@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v1.5
+----
+
+* Support Django 6.0 on Python 3.12.
+* Add Django 6.0 to the test matrix.
+
 v1.4
 ----
 
